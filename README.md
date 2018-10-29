@@ -1,6 +1,9 @@
 # Plan0: Leitner Emulator (Manual Intervals)
 Anki Addon: Leitner System With Manual Intervals
 
+## About:
+This addon adds manual intervals to Anki as a custom scheduler. As a result, it also allows the creation of Leitner's boxes using filter decks.
+
 ## Logging:
 Logging is disabled by default, but can be turned on by editing the script. As this is not proper SRS, doing so could skew your stats.
 
@@ -26,7 +29,7 @@ IVL rotates when it receives a smaller number.
 <b>Loop to middle:</b> 1 2 3 4 5 <i>3</i>  
 <b>Capped at max:</b> 1 2 3 4 5 <i>5</i>  
 
-<i>*The max value is capped only if the current interval is smaller than the maximum. Set "Maximum Interval" enforce all cards.</i>
+<i>*The max value is capped only if the current interval is smaller than the maximum. Set "Maximum Interval" to enforce on all cards.</i>
 
 
 # Leitner System Setup
