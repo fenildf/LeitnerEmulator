@@ -14,8 +14,8 @@ from __future__ import division
 # 0 to disable and use factor from each card.
 USE_FACTOR = 2
 
-#Subtract index on fail
-GRADE_FAILED = 1   # 2?
+#Subtract index on hard
+GRADE_HARD = 1   # 2?
 
 #Increase index on easy
 GRADE_EASY = 1
@@ -219,7 +219,7 @@ def nextInterval(self, card, ease):
             if card.ivl <= v: idx=i; break;
 
     #Adjust index base on grade
-    if ease==2: idx -= GRADE_FAILED
+    if ease==2: idx -= GRADE_HARD
     elif ease>3: idx += GRADE_EASY
 
     if idx<1:
