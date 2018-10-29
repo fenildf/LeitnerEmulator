@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.3
+# Version: 0.0.4
 
 
 from __future__ import division
@@ -210,7 +210,7 @@ def nextInterval(self, card, ease):
 
     custom_ivl=[int(x) for x in conf['sm0Steps'].split()]
     if card.ivl<=1 and ease<4:
-        return custom_ivl[0]
+        return max(1,custom_ivl[0])
 
     LEN=len(custom_ivl)
     try:
