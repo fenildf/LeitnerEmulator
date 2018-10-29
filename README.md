@@ -26,21 +26,21 @@ IVL rotates when it receives a smaller number.
 <b>Loop to middle:</b> 1 2 3 4 5 <i>3</i>  
 <b>Capped at max:</b> 1 2 3 4 5 <i>5</i>  
 
+<i>*The max value is capped only if the current interval is smaller than the maximum. Set "Maximum Interval" enforce all cards.</i>
 
 
 # Leitner System Setup
-Enable addon in deck options menu.  
-Setup filter decks to emulate Leitner's learning boxes.  
+Use filter decks to emulate Leitner's learning boxes.  
+Make sure "Reschedule" options is turned on.  
 <img src="https://github.com/lovac42/LeitnerEmulator/blob/master/screenshots/leitner.png?raw=true"/>
 
 #### Filter Deck Setup
 Use filtered decks to sort by IVL.  
-Make sure "Reschedule" options is turned on.  
-<b> (Box1):</b> deck:"MathDrill" prop:ivl<=1  
-<b> (Box2):</b> deck:"MathDrill" prop:ivl=2  
-<b> (Box3):</b> deck:"MathDrill" prop:ivl=3  
-<b> (Box4):</b> deck:"MathDrill" prop:ivl=4  
-<b> (Box5):</b> deck:"MathDrill" prop:ivl=5  
-<b> (TheDayOfLavos):</b> deck:"MathDrill"  prop:ivl=1999  
+<b> (Box1):</b> deck:"MorseDrill" prop:ivl<=1  
+<b> (Box2):</b> deck:"MorseDrill" prop:ivl=2  
+<b> (Box3):</b> deck:"MorseDrill" prop:ivl=3  
+<b> (Box4):</b> deck:"MorseDrill" prop:ivl=4  
+<b> (Box5):</b> deck:"MorseDrill" prop:ivl=5  
+<b> (TheDayOfLavos):</b> deck:"MorseDrill"  prop:ivl=1999  
 
 <i>*Change filter options as necessary.</i>
