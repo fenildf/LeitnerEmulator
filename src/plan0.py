@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.2
+# Version: 0.0.3
 
 
 from __future__ import division
@@ -23,6 +23,8 @@ GRADE_EASY = 1
 DEFAULT_IVL = "1 2 3 4 5 1999 1999"   # Leitner
 # DEFAULT_IVL = "1 7 16 35"           # SM-0
 # DEFAULT_IVL = "1 10 20 30 1"        # Rotate
+
+REPEAT_IN_FILTER_DECK = True
 
 FILTER_INC_READ_MODEL = False
 # DEFAULT_IVL=5 10 20 30 45 60 90 120 200 200   # For IR
@@ -102,7 +104,7 @@ def answerButtons(self, card, _old):
 def answerButtonList(self, _old):
     if isFilteredCard:
         return _old(self)
-    return ((1, _('Reset')), 
+    return ((1, _('Restart')), 
             (2, _('Lower')),
             (3, _('Same')), 
             (4, _('Higher')) )
@@ -111,9 +113,15 @@ def answerButtonList(self, _old):
 def buttonTime(self, i, _old):
     if isFilteredCard:
         return _old(self, i)
-    if i==1: return "Clear<br>"
-    if i==2: return "Repeat<br>"
+
+    if (REPEAT_IN_FILTER_DECK or not self.card.odid):
+        if i==1: return "Clear<br>"
+        if i==2: return "Repeat<br>"
     return '%s<br>'%nextIntervalString(self.card, i)
+
+def nextIntervalString(card, ease): #button date display
+    ivl=nextInterval(mw.col.sched, card, ease)
+    return fmtTimeSpan(ivl*86400, short=True)
 
 
 #####################################################################
@@ -161,12 +169,12 @@ def answerCard(self, card, ease, _old):
 
 
     #PROCESS GRADES
-    if ease==1: #reset
+    if ease==1 and (REPEAT_IN_FILTER_DECK or not card.odid): #reset
         card.ivl=1 #Can't be 0
         if not isLeechCard(card): #chk suspend
             delay=repeatCard(self, card) #sets queue to 1
 
-    elif ease==2: #repeat
+    elif ease==2 and (REPEAT_IN_FILTER_DECK or not card.odid): #repeat
         card.ivl = nextInterval(self, card, ease)
         delay=repeatCard(self, card) #sets queue to 1
 
@@ -195,11 +203,6 @@ def answerCard(self, card, ease, _old):
     card.flushSched()
 
 
-def nextIntervalString(card, ease): #button date display
-    ivl=nextInterval(mw.col.sched, card, ease)
-    return fmtTimeSpan(ivl*86400, short=True)
-
-
 def nextInterval(self, card, ease):
     conf=mw.col.decks.confForDid(card.did)
     if conf['dyn']:
@@ -213,7 +216,7 @@ def nextInterval(self, card, ease):
     try:
         idx=custom_ivl.index(card.ivl)
     except ValueError:
-        idx=LEN
+        idx=LEN+1
         #find best match, in case user changes profiles
         for i,v in enumerate(custom_ivl):
             if card.ivl <= v: idx=i; break;
@@ -222,7 +225,8 @@ def nextInterval(self, card, ease):
     if ease==2: idx -= GRADE_HARD
     elif ease>3: idx += GRADE_EASY
 
-    if idx<1:
+    idealIvl=1
+    if idx<1 or ease==1:
         idealIvl=custom_ivl[0]
     elif idx<LEN:
         idealIvl=custom_ivl[idx]
