@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.4
+# Version: 0.0.5
 
 
 from __future__ import division
@@ -12,19 +12,17 @@ from __future__ import division
 # NEW_IVL = IVL * USE_FACTOR * conf_multiplier
 # NEW_IVL = IVL * EF * conf_multiplier
 # 0 to disable and use factor from each card.
-USE_FACTOR = 2
+USE_FACTOR = 2    #Multiplier
 
-#Subtract index on hard
-GRADE_HARD = 1   # 2?
-
-#Increase index on easy
-GRADE_EASY = 1
+GRADE_HARD = 1    #Subtract index on hard
+GRADE_EASY = 1    #Increase index on easy
 
 DEFAULT_IVL = "1 2 3 4 5 1999 1999"   # Leitner
 # DEFAULT_IVL = "1 7 16 35"           # SM-0
 # DEFAULT_IVL = "1 10 20 30 1"        # Rotate
 
-REPEAT_IN_FILTER_DECK = True
+#Repeat failed/difficult cards in filtered deck?
+REPEAT_IN_FILTER_DECK = False
 
 FILTER_INC_READ_MODEL = False
 # DEFAULT_IVL=5 10 20 30 45 60 90 120 200 200   # For IR
@@ -204,22 +202,15 @@ def answerCard(self, card, ease, _old):
 
 
 def nextInterval(self, card, ease):
-    conf=mw.col.decks.confForDid(card.did)
-    if conf['dyn']:
-        conf = mw.col.decks.confForDid(card.odid)
-
+    conf=mw.col.decks.confForDid(card.odid or card.did)
     custom_ivl=[int(x) for x in conf['sm0Steps'].split()]
     if card.ivl<=1 and ease<4:
         return max(1,custom_ivl[0])
 
     LEN=len(custom_ivl)
-    try:
-        idx=custom_ivl.index(card.ivl)
-    except ValueError:
-        idx=LEN+1
-        #find best match, in case user changes profiles
-        for i,v in enumerate(custom_ivl):
-            if card.ivl <= v: idx=i; break;
+    idx=LEN+GRADE_HARD #for ease2
+    for i,v in enumerate(custom_ivl):
+        if card.ivl <= v: idx=i; break;
 
     #Adjust index base on grade
     if ease==2: idx -= GRADE_HARD
@@ -230,6 +221,8 @@ def nextInterval(self, card, ease):
         idealIvl=custom_ivl[0]
     elif idx<LEN:
         idealIvl=custom_ivl[idx]
+    elif ease==3: #Must come after above condition
+        idealIvl=card.ivl
     else:
         modifier=conf['rev'].get('ivlFct', 1)
         if ease==2:
@@ -239,9 +232,14 @@ def nextInterval(self, card, ease):
                 card.factor=adjustFactor(card,0) #initialize new/malformed cards
                 idealIvl = card.ivl / (card.factor/1000.0) / modifier
             idealIvl = min(card.ivl, int(idealIvl)) #prevent larger ivls from %modifier%
-        elif ease==3:
-            idealIvl=card.ivl
+            #Find best fit within range
+            if idealIvl<=custom_ivl[-1]:
+                for i,v in enumerate(custom_ivl):
+                    if idealIvl <= v: idealIvl=v; break;
+
         elif ease==4:
+            if card.ivl<=custom_ivl[-1]:
+                card.ivl=custom_ivl[-1]
             if USE_FACTOR:
                 idealIvl = card.ivl * USE_FACTOR * modifier
             else:
