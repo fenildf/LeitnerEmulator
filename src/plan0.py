@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.5
+# Version: 0.0.6
 
 
 from __future__ import division
@@ -130,7 +130,7 @@ def nextIntervalString(card, ease): #button date display
 LOG_LEARNED=0
 LOG_REVIEWED=1
 LOG_RELEARNED=2
-LOG_CRAM=3 #not used
+LOG_CRAM=3
 LOG_RESCHED=4
 
 def answerCard(self, card, ease, _old):
@@ -143,13 +143,10 @@ def answerCard(self, card, ease, _old):
     if self._burySiblingsOnAnswer:
         self._burySiblings(card)
 
-    #SETUP LOGGING PARAMS
-    delay=0
-    revType = 'rev'
-    logType = LOG_REVIEWED
     card.factor=adjustFactor(card,0) #initialize new/malformed cards
 
     #LOG TIME (for Display only)
+    delay=0
     if card.queue==2:
         card.lastIvl = card.ivl
     elif card.queue==3:
@@ -158,9 +155,15 @@ def answerCard(self, card, ease, _old):
         card.lastIvl = -getDelay(self, card)
 
     #LOG TYPE
+    revType = 'rev'
+    logType = LOG_REVIEWED
     if card.type==0 and card.queue==0:
         logType = LOG_LEARNED
         revType = 'new'
+    elif card.odid:
+        if card.queue!=2:
+            logType=LOG_CRAM
+            revType = 'lrn'
     elif card.queue in (1,3):
         logType=LOG_RELEARNED if card.type==2 else LOG_LEARNED
         revType = 'lrn'
