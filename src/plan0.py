@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.7
+# Version: 0.0.8
 
 
 from __future__ import division
@@ -71,6 +71,7 @@ isFilteredCard = False
 
 def isFiltered():
     card = mw.reviewer.card
+    if not card: return True
     conf = mw.col.decks.confForDid(card.did)
     if conf['dyn']:
         if not conf['resched']: return True
