@@ -25,11 +25,13 @@ IVL auto doubles when it falls out of given range.
 
 
 IVL rotates when it receives a smaller number.  
-<b>Loop to beginning:</b> 1 2 3 4 5 <i>1</i>  
-<b>Loop to middle:</b> 1 2 3 4 5 <i>3</i>  
-<b>Capped at max:</b> 1 2 3 4 5 <i>5</i>  
+<b>Loop to beginning:</b> 1 2 3 4 5 <i>1 (2) (3) (4) ...</i>  
+<b>Loop to middle:</b> 1 2 3 4 5 <i>3 (4) (5) (3) (4) ...</i>  
+<b>Capped at max*:</b> 1 2 3 4 5 <i>5 (5) (5) (5) (5) ...</i>  
+<b>Bypass addon**:</b> 1 2 3 4 <i>-5 (regular scheduler) </i>
 
-<i>*The max value is capped only if the current interval is smaller than the maximum. Set "Maximum Interval" to enforce on all cards.</i>
+<i>* The max value is capped only if the current interval is smaller than the maximum. Set "Maximum Interval" to enforce on all cards.</i>  
+<i>** Use negative value on the last step to bypass this addon. It will use Anki's regular scheduler (with logging) if the card's current ivl equals or exceeds this interval.</i>  
 
 
 # Leitner System Setup
