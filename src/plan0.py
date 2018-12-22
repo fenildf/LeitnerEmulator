@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.6
+# Version: 0.0.9
 
 
 from __future__ import division
@@ -20,6 +20,10 @@ GRADE_EASY = 1    #Increase index on easy
 DEFAULT_IVL = "1 2 3 4 5 1999 1999"   # Leitner
 # DEFAULT_IVL = "1 7 16 35"           # SM-0
 # DEFAULT_IVL = "1 10 20 30 1"        # Rotate
+
+#Bypass this addon if card.ivl exceed cap.
+# DEFAULT_IVL = "1 2 3 4 5 6 -7"
+
 
 #Repeat failed/difficult cards in filtered deck?
 REPEAT_IN_FILTER_DECK = False
@@ -67,6 +71,7 @@ isFilteredCard = False
 
 def isFiltered():
     card = mw.reviewer.card
+    if not card: return True
     conf = mw.col.decks.confForDid(card.did)
     if conf['dyn']:
         if not conf['resched']: return True
@@ -74,6 +79,13 @@ def isFiltered():
 
     if not conf.get("sm0emu", False):
         return True
+
+    # No plan0 if IVL exceeds -last_step
+    steps=conf['sm0Steps'].split()
+    if steps:
+        step=int(steps[-1])
+        if step<0 and card.ivl>=abs(step):
+            return True
 
     if FILTER_INC_READ_MODEL: #Avoid IR Cards
         model = card.model()['name']
@@ -191,7 +203,7 @@ def answerCard(self, card, ease, _old):
         card.left = 0
         if card.odid:
             card.did = card.odid
-            card.odid=card.odue=0
+        card.odid=card.odue=0
 
     #LOG THIS REVIEW
     if ENABLE_REVLOG_LOGGING:
@@ -199,14 +211,12 @@ def answerCard(self, card, ease, _old):
         card.reps += 1
     self._updateStats(card, revType)
     self._updateStats(card, 'time', card.timeTaken())
-    card.mod = intTime()
-    card.usn = self.col.usn()
     card.flushSched()
 
 
 def nextInterval(self, card, ease):
     conf=mw.col.decks.confForDid(card.odid or card.did)
-    custom_ivl=[int(x) for x in conf['sm0Steps'].split()]
+    custom_ivl=[abs(int(x)) for x in conf['sm0Steps'].split()]
     if card.ivl<=1 and ease<4:
         return max(1,custom_ivl[0])
 
@@ -299,12 +309,20 @@ def repeatCard(self, card):
     card.queue = 1
     card.left = 1001
 
-    delay=getDelay(self,card)
-    card.due = intTime() + delay
-    self.lrnCount += 1
-    heappush(self._lrnQueue, (card.due, card.id))
-    return delay
+    if card.odid or not card.odue:
+        card.odue = self.today
 
+    delay=getDelay(self, card) #return for revlog
+    fuzz=random.randrange(1, 30)
+    card.due=intTime() + delay + fuzz
+    card.due=min(self.dayCutoff-1, card.due)
+    self.lrnCount += 1
+
+    if (self.name!="std2" and card.due<self.dayCutoff) or \
+    (card.due<(intTime()+self.col.conf['collapseTime'])):    # If V2
+        heappush(self._lrnQueue, (card.due, card.id))
+
+    return delay #ivl time for revlog
 
 def getDelay(self, card):
     conf=self._lrnConf(card)
