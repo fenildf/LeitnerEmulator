@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.8
+# Version: 0.0.9
 
 
 from __future__ import division
@@ -203,7 +203,7 @@ def answerCard(self, card, ease, _old):
         card.left = 0
         if card.odid:
             card.did = card.odid
-            card.odid=card.odue=0
+        card.odid=card.odue=0
 
     #LOG THIS REVIEW
     if ENABLE_REVLOG_LOGGING:
@@ -308,6 +308,9 @@ def repeatCard(self, card):
     card.type=2 if card.type==2 else 1
     card.queue = 1
     card.left = 1001
+
+    if card.odid or not card.odue:
+        card.odue = self.today
 
     delay=getDelay(self, card) #return for revlog
     fuzz=random.randrange(1, 30)
