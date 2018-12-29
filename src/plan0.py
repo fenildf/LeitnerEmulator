@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.0.9
+# Version: 0.1.0
 
 
 from __future__ import division
@@ -303,14 +303,12 @@ def isLeechCard(card): #review cards only
     return leech and card.queue == -1
 
 def repeatCard(self, card):
-    #new cards in learning steps: card.type=1
-    #lapse cards in learning steps: card.type=2
-    card.type=2 if card.type==2 else 1
+    if card.type==2:
+        card.odue=self.today #for bury or suspend
+    else:
+        card.type=1
     card.queue = 1
     card.left = 1001
-
-    if card.odid or not card.odue:
-        card.odue = self.today
 
     delay=getDelay(self, card) #return for revlog
     fuzz=random.randrange(1, 30)
