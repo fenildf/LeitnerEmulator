@@ -2,7 +2,7 @@
 # Copyright: (C) 2018 Lovac42
 # Support: https://github.com/lovac42/LeitnerEmulator
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Version: 0.1.0
+# Version: 0.1.1
 
 
 from __future__ import division
@@ -177,7 +177,7 @@ def answerCard(self, card, ease, _old):
             logType=LOG_CRAM
             revType = 'lrn'
     elif card.queue in (1,3):
-        logType=LOG_RELEARNED if card.type==2 else LOG_LEARNED
+        logType=LOG_RELEARNED if card.type in (2,3) else LOG_LEARNED
         revType = 'lrn'
 
 
@@ -304,7 +304,10 @@ def isLeechCard(card): #review cards only
 
 def repeatCard(self, card):
     if card.type==2:
-        card.odue=self.today #for bury or suspend
+        if self.name=="std2":
+            card.type=3
+        else: #v1
+            card.odue=self.today #for bury or suspend
     else:
         card.type=1
     card.queue = 1
