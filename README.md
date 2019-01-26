@@ -49,3 +49,15 @@ Use filtered decks to sort by IVL.
 <b> (TheDayOfLavos):</b> deck:"MorseDrill"  prop:ivl=1999  
 
 <i>*Change filter options as necessary.</i>
+
+
+
+
+## Leitner Baby Step Setup:
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/1.png?raw=true"/>  
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/2.png?raw=true"/>  
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/3.png?raw=true"/>  
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/4.png?raw=true"/>  
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/5.png?raw=true"/>  
+<img src="https://github.com/lovac42/LeitnerEmulator/blob/master/tutorial/6.png?raw=true"/>  
+
